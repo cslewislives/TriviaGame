@@ -1,19 +1,21 @@
 $(document).ready(function () {
 
     var questions = [];
-    var timer = 29;
     var mainContent = $(".question-view");
     var timeVisual = $(".time-remaining");
     var playerChoice;
     var correctAns = 0;
     var wrongAns = 0;
     var unanswered = 0;
+    var currentQ = 0;
+    var minutes, seconds;
+    var startTime = 15;
 
-    // initializeGame();
 
     function Question(question, answerA, answerB, answerC, correct) {
         this.question = question;
         this.answers = [answerA, answerB, answerC, correct]
+        this.correct = correct;
 
     }
 
@@ -24,71 +26,103 @@ $(document).ready(function () {
 
     function addQuestions() {
         createQuestions("Question 1?", "Answer A", "Answer B", "Answer C", "Correct Answer");
-        createQuestions("Question 2?", "Answer A", "Answer B", "Answer C", "Correct Answer");
+        createQuestions("Question 2?", "Answer X", "Answer Y", "Answer Z", "Correct Answer");
         createQuestions("Question 3?", "Answer D", "Answer C", "Answer E", "Correct Answer");
         createQuestions("Question 4?", "Answer F", "Answer G", "Answer H", "Correct Answer");
-        createQuestions("Question I?", "Answer J", "Answer K", "Answer L", "Correct Answer");
+        createQuestions("Question 5?", "Answer J", "Answer K", "Answer L", "Correct Answer");
     }
 
-    function startTimer() {
-        countdown = setInterval(decrement, 1000);
-    }
-    console.log(timer);
+    var timer = {
+        time: startTime,
 
-    function decrement() {
-        renderTimer();
-        
-        --timer;
-        
-        if (timer === 0) {
-            stop();
+        start: function () {
+            countdown = setInterval(timer.decrement, 1000);
+        },
+
+        decrement: function () {
+
+            minutes = Math.floor(timer.time / 60);
+            seconds = timer.time - (minutes * 60);
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            if (minutes === 0) {
+                minutes = "00";
+            } else if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+
+            timer.render();
+            if (timer.time === 0) {
+                timer.stop();
+                answerScreen();
+                nextQuestion();
+                unanswered++;
+            }
+            timer.time--;
+        },
+
+        stop: function () {
+            clearInterval(countdown);
+            timer.time = startTime;
+        },
+
+        render: function () {
+
+            showTime = $("<h3>");
+            showTime.addClass("time-remaining");
+            showTime.text("Time Remaining: " + minutes + ":" + seconds);
+            timeVisual.html(showTime);
+
         }
-    }
-    
-    function stop() {
-        clearInterval(countdown);
-    }
-
-    function renderTimer() {
-
-        showTime = $("<h3>");
-        showTime.addClass("time-remaining");
-        showTime.text("Time Remaining: " + timer);
-        timeVisual.html(showTime);
-    
     }
 
     function renderQuestion() {
-
-        var div = $("<h2>");
-        div.addClass("question");
-        div.text(questions[0].question);
-        mainContent.html(div);
-        console.log(questions[0].question);
-    
-        for (let i of questions[0].answers) {
-            var answer = $("<div>");
-            answer.addClass("btn btn-default answers");
-            answer.text(i);
-            mainContent.append(answer).append("<br>");
-            if (i === questions[0].answers[3]) {
-                answer.attr("id", "correct");
-            } else {
-                answer.addClass("wrong");
+        startTime = 15;
+        if (currentQ >= questions.length) {
+            endGame();
+        } else {
+            randomizeAns();
+            timer.decrement();
+            timer.start();
+            var div = $("<h2>");
+            div.addClass("question");
+            div.text(questions[currentQ].question);
+            mainContent.html(div);
+            console.log(questions[currentQ].question);
+            for (let i of questions[currentQ].answers) {
+                var answer = $("<div>");
+                answer.addClass("btn btn-default answers");
+                answer.text(i);
+                mainContent.append(answer).append("<br>");
+                if (i === questions[currentQ].correct) {
+                    answer.attr("id", "correct");
+                } else {
+                    answer.addClass("wrong");
+                }
             }
         }
-    
+
     }
+
+    function randomizeAns() {
+
+        questions[currentQ].answers.sort(function (a, b) {
+            return 0.5 - Math.random()
+        });
+
+    }
+
 
     function answerScreen() {
         mainContent.empty();
         var actualAns = $("<h2>");
         actualAns.addClass("correct-answer");
-        actualAns.text(questions[0].answers[3]);
+        actualAns.text(questions[currentQ].correct);
         mainContent.html(actualAns);
-        console.log(questions[0].answers[3]);
+        console.log(questions[currentQ].correct);
         if (playerChoice === "correct") {
-            var winLose = $("<h2>");
+            winLose = $("<h2>");
             winLose.addClass("win-lose");
             winLose.text("You are Correct!!");
             timeVisual.html(winLose);
@@ -103,32 +137,73 @@ $(document).ready(function () {
         }
         console.log(playerChoice)
     }
-    
+
     function initializeGame() {
         mainContent.empty();
-        
-        startTimer();
-        renderTimer();
+        correctAns = 0;
+        wrongAns = 0;
+        unanswered = 0;
+        currentQ = 0;
+        startTime = 15;
         addQuestions();
         renderQuestion();
         console.log(questions);
         //player presses start and the first question appears
         //there is a certain amount of time per question
         //player has multiple choices to choose from
-        
+
     }
+
+    function nextQuestion() {
+        ++currentQ;
+
+        //clock is reset
+        setTimeout(renderQuestion, 2000);
+
+    }
+
+
     $(".start-button").click(initializeGame);
 
     //when player chooses an option player is shown correct answer and if they got it right
-    mainContent.on("click", ".answers", function() {
+    mainContent.on("click", ".answers", function () {
         playerChoice = $(this).attr("id");
-        stop();
+        timer.stop();
         answerScreen();
-        console.log(playerChoice)
-        
+        //with no input the app goes to the next question
+        nextQuestion();
+        console.log(currentQ);
+
     })
-    //with no input the app goes to the next question
-    //clock is reset
+
+    function populateEnd() {
+        var correctTotal = $("<h3>");
+        correctTotal.addClass("totals");
+        correctTotal.text("Answered Correctly: " + correctAns);
+        mainContent.html(correctTotal).append("<br>");
+        
+        var wrongTotal = $("<h3>");
+        wrongTotal.addClass("totals");
+        wrongTotal.text("Answered Incorrectly: " + wrongAns);
+        mainContent.append(wrongTotal).append("<br>");
+        
+        var unansweredTotal = $("<h3>");
+        unansweredTotal.addClass("totals");
+        unansweredTotal.text("Unanswered: " + unanswered);
+        mainContent.append(unansweredTotal).append("<br>");
+    }
+
+    function endGame() {
+        mainContent.empty();
+        var finalScreen = $("<h2>");
+        finalScreen.addClass("final-score");
+        finalScreen.text("Your Total Score");
+        timeVisual.html(finalScreen);
+        populateEnd();
+        console.log(correctAns, wrongAns, unanswered);
+
+    }
+
     //if player does not choose an answer in the time given player is shown correct answer
     //once all questions are finished player is shown amount correct/incorrect/unanswered
     //timer is stopped
