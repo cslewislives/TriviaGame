@@ -1,7 +1,9 @@
 $(document).ready(function () {
 
     var questions = [];
-    initializeGame();
+    var timer = 29;
+
+    // initializeGame();
 
     function Question(question, answerA, answerB, answerC, correct) {
         this.question = question;
@@ -14,21 +16,55 @@ $(document).ready(function () {
         questions.push(quest);
     }
 
-    function initializeGame() {
-        $(".question-view").empty();
-
+    function createQuestions() {
         addQuestions("Question 1?", "Answer A", "Answer B", "Answer C", "Correct Answer");
         addQuestions("Question 2?", "Answer A", "Answer B", "Answer C", "Correct Answer");
         addQuestions("Question 3?", "Answer D", "Answer C", "Answer E", "Correct Answer");
         addQuestions("Question 4?", "Answer F", "Answer G", "Answer H", "Correct Answer");
         addQuestions("Question I?", "Answer J", "Answer K", "Answer L", "Correct Answer");
-            console.log(questions);
+    }
+
+    function startTimer() {
+        countdown = setInterval(decrement, 1000);
+    }
+    console.log(timer);
+
+    function decrement() {
+        showTime = $("<h3>");
+        showTime.addClass("time-remaining");
+        showTime.text("Time Remaining: " + timer);
+        $(".time-remaining").html(showTime);
+        
+        
+        --timer;
+        
+        if (timer === 0) {
+            stop();
+        }
+    }
+    
+    function stop() {
+        clearInterval(countdown);
+    }
+    
+    function initializeGame() {
+        $(".question-view").empty();
+        
+        startTimer();
+        showTime = $("<h3>");
+        showTime.addClass("time-remaining");
+        showTime.text("Time Remaining: " + timer);
+        $(".time-remaining").html(showTime);
+
+        createQuestions();
+        console.log(questions);
+
 
         var div = $("<h2>");
         div.addClass("question");
         div.text(questions[0].question);
         $(".question-view").html(div);
-            console.log(questions[0].question);
+        console.log(questions[0].question);
 
         for (let i of questions[0].answers) {
             var answer = $("<p>");
@@ -37,10 +73,12 @@ $(document).ready(function () {
             $(".question-view").append(answer);
         }
 
-
+        
+        
         //player presses start and the first question appears
-
+        
     }
+    $(".start-button").click(initializeGame);
     //there is a certain amount of time per question
     //player has multiple choices to choose from
     //when player chooses an option player is shown correct answer and if they got it right
