@@ -4,10 +4,10 @@ $(document).ready(function () {
     var mainContent = $(".question-view");
     var timeVisual = $(".time-remaining");
     var playerChoice;
-    var correctAns = 0;
-    var wrongAns = 0;
-    var unanswered = 0;
-    var currentQ = 0;
+    var correctAns = 0,
+        wrongAns = 0,
+        unanswered = 0,
+        currentQ = 0;
     var minutes, seconds;
     var startTime = 15;
 
@@ -33,6 +33,7 @@ $(document).ready(function () {
     }
 
     var timer = {
+        
         time: startTime,
 
         start: function () {
@@ -94,7 +95,7 @@ $(document).ready(function () {
                 var answer = $("<div>");
                 answer.addClass("btn btn-default answers");
                 answer.text(i);
-                mainContent.append(answer).append("<br>");
+                mainContent.append(answer).append("<br>").append("<br>");
                 if (i === questions[currentQ].correct) {
                     answer.attr("id", "correct");
                 } else {
@@ -156,8 +157,6 @@ $(document).ready(function () {
 
     function nextQuestion() {
         ++currentQ;
-
-        //clock is reset
         setTimeout(renderQuestion, 2000);
 
     }
@@ -177,20 +176,26 @@ $(document).ready(function () {
     })
 
     function populateEnd() {
+        //once all questions are finished player is shown amount correct/incorrect/unanswered
         var correctTotal = $("<h3>");
         correctTotal.addClass("totals");
         correctTotal.text("Answered Correctly: " + correctAns);
         mainContent.html(correctTotal).append("<br>");
-        
+
         var wrongTotal = $("<h3>");
         wrongTotal.addClass("totals");
         wrongTotal.text("Answered Incorrectly: " + wrongAns);
         mainContent.append(wrongTotal).append("<br>");
-        
+
         var unansweredTotal = $("<h3>");
         unansweredTotal.addClass("totals");
         unansweredTotal.text("Unanswered: " + unanswered);
         mainContent.append(unansweredTotal).append("<br>");
+
+        var resetBtn = $("<button>");
+        resetBtn.addClass("btn btn-default reset-button");
+        resetBtn.text("Try Again?");
+        mainContent.append(resetBtn);
     }
 
     function endGame() {
@@ -204,13 +209,23 @@ $(document).ready(function () {
 
     }
 
-    //if player does not choose an answer in the time given player is shown correct answer
-    //once all questions are finished player is shown amount correct/incorrect/unanswered
-    //timer is stopped
+    function reset() {
+        mainContent.empty();
+        correctAns = 0;
+        wrongAns = 0;
+        unanswered = 0;
+        currentQ = 0;
+        startTime = 15;
+        renderQuestion();
+        console.log(questions);
+    }
+
     //player can click reset button
-    //button restarts game but does not reload the page.
-
-
+    $(document).on("click", ".reset-button", function() {
+        //button restarts game but does not reload the page.
+        event.preventDefault();
+        reset();
+    })
 
 
 })
