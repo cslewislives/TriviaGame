@@ -1,16 +1,37 @@
 $(document).ready(function () {
 
-    var questions = [];
     var mainContent = $(".question-view");
     var timeVisual = $(".time-remaining");
-    var playerChoice;
-    var correctAns = 0,
-        wrongAns = 0,
-        unanswered = 0,
-        currentQ = 0;
-    var minutes, seconds;
+    var questions,
+        correctAns,
+        wrongAns,
+        unanswered,
+        currentQ,
+        playerChoice,
+        minutes,
+        seconds;
     var startTime = 15;
 
+    /* 
+        function to set everything to the beginning of the game
+    */
+
+    function initializeGame() {
+        mainContent.empty();
+        questions = [];
+        correctAns = 0;
+        wrongAns = 0;
+        unanswered = 0;
+        currentQ = 0;
+        startTime = 15;
+        addQuestions();
+        renderQuestion();
+        console.log(questions);
+    }
+
+    /*=======================================
+        Object constructor for my questions
+    =========================================*/
 
     function Question(question, answerA, answerB, answerC, correct) {
         this.question = question;
@@ -19,21 +40,76 @@ $(document).ready(function () {
 
     }
 
+    /*=======================================
+        function to dynamically create questions and add them to the questions array
+    =========================================*/
+
     function createQuestions(question, answerA, answerB, answerC, correct) {
         var quest = new Question(question, answerA, answerB, answerC, correct);
         questions.push(quest);
     }
 
+    /*=======================================
+        function that holds all of my created questions
+    =========================================*/
+
     function addQuestions() {
-        createQuestions("Question 1?", "Answer A", "Answer B", "Answer C", "Correct Answer");
-        createQuestions("Question 2?", "Answer X", "Answer Y", "Answer Z", "Correct Answer");
-        createQuestions("Question 3?", "Answer D", "Answer C", "Answer E", "Correct Answer");
-        createQuestions("Question 4?", "Answer F", "Answer G", "Answer H", "Correct Answer");
-        createQuestions("Question 5?", "Answer J", "Answer K", "Answer L", "Correct Answer");
+        createQuestions("What is the incantation for unlocking a door?", "Wingardium Leviosa",
+            "Sectumsempra",
+            "Silencio",
+            "Alohomora");
+        createQuestions("When affected by a Dementor what should one eat?", "Broccoli",
+            "Bread",
+            "Soup",
+            "Chocolate");
+        createQuestions("What is the difference between a Werewolf and an Animagus?",
+            "Nothing they are synonyms",
+            "A Werewolf chooses when to transform and an Animagus does not",
+            "A Werewolf is a version of an Animagus, they just chose a wolf",
+            "A Werewolf is a cursed human who must transform at the full moon, an Animagus is a wizard/witch who chooses to turn into an animal");
+        createQuestions("If one were to drink a Unicorn’s blood what would happen?",
+            "They would get a wish",
+            "They would die instantly",
+            "They would turn into a Unicorn",
+            "They would be kept alive indefinitely but would live a cursed life");
+        createQuestions("Which one is an Unforgivable Curse?",
+            "Reducto",
+            "Stupefy",
+            "Aguamenti",
+            "Imperio");
+        createQuestions("What cures most poisons?",
+            "Dragon’s blood",
+            "Pixie wings",
+            "Polyjuice Potion",
+            "A Bezoar");
+        createQuestions("What is the incantation to Disarm someone?",
+            "Expecto Patronum",
+            "Petrificus Totalus",
+            "Serpensortia",
+            "Expelliarmus");
+        createQuestions("How long does it take to brew a Polyjuice Potion?",
+            "6 days",
+            "3 hours",
+            "1 year",
+            "1 month");
+        createQuestions("What is a Horcrux?",
+            "A type of currency",
+            "A sword used to destroy unbreakable items",
+            "A ball used in Quidditch",
+            "A fragment of a soul hidden in an object");
+        createQuestions("What should one do first before approaching a Hippogriff?",
+            "Wave",
+            "Sing",
+            "Clap",
+            "Bow");
     }
 
+    /*=======================================
+        timer object that holds all of the timer functionality
+    =========================================*/
+
     var timer = {
-        
+
         time: startTime,
 
         start: function () {
@@ -78,6 +154,10 @@ $(document).ready(function () {
         }
     }
 
+    /*=======================================
+        function to render questions to the page as long as the lst question hasn't been answered
+    =========================================*/
+
     function renderQuestion() {
         startTime = 15;
         if (currentQ >= questions.length) {
@@ -106,6 +186,10 @@ $(document).ready(function () {
 
     }
 
+    /*=======================================
+        function that randomly sorts the answers in the questions.answers array so that I don't have to physically change the location of the correct answer myself
+    =========================================*/
+
     function randomizeAns() {
 
         questions[currentQ].answers.sort(function (a, b) {
@@ -114,6 +198,9 @@ $(document).ready(function () {
 
     }
 
+    /*=======================================
+        function that shows the correct answer after each question
+    =========================================*/
 
     function answerScreen() {
         mainContent.empty();
@@ -139,21 +226,9 @@ $(document).ready(function () {
         console.log(playerChoice)
     }
 
-    function initializeGame() {
-        mainContent.empty();
-        correctAns = 0;
-        wrongAns = 0;
-        unanswered = 0;
-        currentQ = 0;
-        startTime = 15;
-        addQuestions();
-        renderQuestion();
-        console.log(questions);
-        //player presses start and the first question appears
-        //there is a certain amount of time per question
-        //player has multiple choices to choose from
-
-    }
+    /*=======================================
+        function that holds the timer to move to the next question without user input
+    =========================================*/
 
     function nextQuestion() {
         ++currentQ;
@@ -161,22 +236,11 @@ $(document).ready(function () {
 
     }
 
-
-    $(".start-button").click(initializeGame);
-
-    //when player chooses an option player is shown correct answer and if they got it right
-    mainContent.on("click", ".answers", function () {
-        playerChoice = $(this).attr("id");
-        timer.stop();
-        answerScreen();
-        //with no input the app goes to the next question
-        nextQuestion();
-        console.log(currentQ);
-
-    })
+    /*=======================================
+        function that dynamically creates the end screen
+    =========================================*/
 
     function populateEnd() {
-        //once all questions are finished player is shown amount correct/incorrect/unanswered
         var correctTotal = $("<h3>");
         correctTotal.addClass("totals");
         correctTotal.text("Answered Correctly: " + correctAns);
@@ -198,33 +262,34 @@ $(document).ready(function () {
         mainContent.append(resetBtn);
     }
 
+    /*=======================================
+        function to show the end screen
+    =========================================*/
+
     function endGame() {
         mainContent.empty();
         var finalScreen = $("<h2>");
         finalScreen.addClass("final-score");
-        finalScreen.text("Your Total Score");
+        finalScreen.text("Your Total Score:");
         timeVisual.html(finalScreen);
         populateEnd();
         console.log(correctAns, wrongAns, unanswered);
 
     }
 
-    function reset() {
-        mainContent.empty();
-        correctAns = 0;
-        wrongAns = 0;
-        unanswered = 0;
-        currentQ = 0;
-        startTime = 15;
-        renderQuestion();
-        console.log(questions);
-    }
+    $(".start-button").click(initializeGame);
 
-    //player can click reset button
-    $(document).on("click", ".reset-button", function() {
-        //button restarts game but does not reload the page.
-        event.preventDefault();
-        reset();
+    mainContent.on("click", ".answers", function () {
+        playerChoice = $(this).attr("id");
+        timer.stop();
+        answerScreen();
+        nextQuestion();
+        console.log(currentQ);
+
+    })
+
+    $(document).on("click", ".reset-button", function () {
+        initializeGame();
     })
 
 
