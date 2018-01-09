@@ -66,7 +66,7 @@ $(document).ready(function () {
             "Nothing they are synonyms",
             "A Werewolf chooses when to transform and an Animagus does not",
             "A Werewolf is a version of an Animagus, they just chose a wolf",
-            "A Werewolf is a cursed human who must transform at the full moon, an Animagus is a wizard/witch who chooses to turn into an animal");
+            "A Werewolf is cursed and must transform, an Animagus chooses to turn into an animal");
         createQuestions("If one were to drink a Unicorn’s blood what would happen?",
             "They would get a wish",
             "They would die instantly",
@@ -169,7 +169,7 @@ $(document).ready(function () {
             var div = $("<h2>");
             div.addClass("question");
             div.text(questions[currentQ].question);
-            mainContent.html(div);
+            mainContent.html(div).append("<br>");
             console.log(questions[currentQ].question);
             for (let i of questions[currentQ].answers) {
                 var answer = $("<div>");
@@ -206,7 +206,7 @@ $(document).ready(function () {
         mainContent.empty();
         var actualAns = $("<h2>");
         actualAns.addClass("correct-answer");
-        actualAns.text(questions[currentQ].correct);
+        actualAns.html("The correct answer is: " + "<br>" + "<br>" + questions[currentQ].correct);
         mainContent.html(actualAns);
         console.log(questions[currentQ].correct);
         if (playerChoice === "correct") {

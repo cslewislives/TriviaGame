@@ -1,0 +1,57 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    color: #fff;
+    background: url("../images/OWLs.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    text-shadow: 2px 2px 4px #000000;
+    font-family: "Spectral SC", serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: "Spectral SC", serif;
+}
+
+.title {
+    background: #0b1c26 ;
+    color: #fff;
+    border-bottom: 2px solid #d97a43 ;
+    margin: 0 0 40px 0;
+    height: 100%;
+    width: auto;
+    padding: 20px 0;
+}
+
+.page-header h1 {
+    font-size: 4em;
+    margin: 0;
+}
+
+.question-view {
+    padding: 2em;
+    border: 2px solid #777;
+    margin: 0 30px 10px 0;
+    font-size: 1.25em;
+    background: rgba(7, 51, 89, 0.8) !important;
+}
+
+.start-button,
+.answers,
+.reset-button {
+    background: #0b1c26;
+    color: white;
+    font-size: 1.25em;
+}
+
+
+
